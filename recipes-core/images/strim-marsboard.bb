@@ -17,7 +17,5 @@ IMAGE_ROOTFS_SIZE = "8192"
 
 IMAGE_FSTYPES = "ext3 sdcard tar.gz"
 
-ROOTFS_POSTPROCESS_COMMAND += "remove_packaging_data_files ; "
-
 PREFERRED_VERSION_gcc = "4.7.2"
 PREFERRED_VERSION_gcc-cross = "4.7.2"
