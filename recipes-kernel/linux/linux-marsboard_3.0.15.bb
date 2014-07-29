@@ -4,7 +4,7 @@
 include linux-marsboard.inc
 
 # MarS Board branch
-SRCREV = "eeb0c0e6378797bac0bfd8da79362211d518a48b"
+SRCREV = "${AUTOREV}"
 LOCALVERSION = "-marsboard+yocto"
 
 COMPATIBLE_MACHINE = "(marsboard)"
