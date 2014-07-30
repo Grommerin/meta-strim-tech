@@ -15,8 +15,9 @@ SCMVERSION ?= "y"
 
 # SRC_URI for wandboard kernel
 SRC_URI = "git://github.com/Grommerin/kernel_imx.git \
-           file://defconfig \
+           file://defconfig;name=dconf \
 "
+SRC_URI[dconf.md5sum] = "6af0c74fe0a87d8fdb3dfb4cfd19063b"
 
 do_install_append() {
    # I keep getting do_package_qa errors when leaving these files in this directory
