@@ -1,0 +1,1 @@
+set sysroot /home/gromin/workspace/poky/1.6/sysroots
