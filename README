@@ -1,64 +1,138 @@
-This README file contains information on the contents of the
-strim-tech layer.
+Инструкция для создания образов на marsboard.
 
-Please see the corresponding sections below for details.
+Что бы работать с образами для marsboard необходимо скачать исходный код bitbake.
+Сдесь и далее рассматривается установка в домашнюю директорию, однако все действия справедливы
+и для установки в любую другую директорию на ваше усмотрение. Требований только два:
+1. Для директории должны быть разрешены чтение и запись.
+2. ВАЖНО!! Для сборки образов рекомендуется 50Гб свободного места на жестком диске. 
+
+Устанавливаем необходимые зависимости
+
+	$ sudo apt-get install gawk wget git-core diffstat unzip texinfo build-essential chrpath libsdl1.2-dev xterm curl
+
+Инициализируем repo (из Google), добавляем его в переменные среды и даем прав всяких и разных.
+
+    $ mkdir ~/bin
+
+    $ curl http://commondatastorage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
+
+    $ PATH=$PATH:~/bin
+
+    $ chmod a+x ~/bin/repo
+
+Теперь пришло времмя скачать исходный код.
+
+    $ mkdir fsl-community-bsp
+
+    $ cd fsl-community-bsp
+
+    $ repo init -u https://github.com/Freescale/fsl-community-bsp-platform -b dora 
+
+    $ repo sync
+
+//.....................................................................
+
+Желательно хотя бы раз в неделю обновлять исходный код командой 
+
+	$ repo sync
+
+Если она отказывается работать, нужно заново прописать repo в переменные среды и дать ему права, после чего в вашей папке bitbake выполнить синхронизацию.
+
+	$ PATH=$PATH:~/bin
+
+    $ chmod a+x ~/bin/repo
+
+    $ cd fsl-community-bsp
+
+    $ repo sync
+
+//....................................................................
+
+Для начала работы с bitbake нужно из корневой директории (fsl-community-bsp) выполнить команду:
+
+	$ source setup-environment build
+
+* При первом запуске согласитесь с EULA *
+Эта команда создаст папку, в которой будут храниться конфигурационные, временные и выходные файлы, созданные при работе bitbake. Вся работа с bitbake происходит в созданной папке build. Вызывайте эту команду всякий раз перед тем, как впервые после релога запустить bitbake (данные не затираются, все Ок).
+
+Теперь у вас есть исходный код для создания образов под различные платформы, однако marsboard среди них нет. Исправим это досадное недоразумение.
+
+	$ cd ../sources
+
+	$ git clone git://github.com/Grommerin/meta-strim-tech.git
+
+Только что вы скачали новый слой рецептов для bitbake. В нем содержится все что нужно для сборки образов для marsboard, а так же разработанные нашей компанией программы для работы с CAN интерфейсом.
+
+Теперь нужно рассказать bitbake о новом слое что бы он узнал о его существовании. Для этих целей в fsl-community-bsp, в папке build/conf есть файл bblayers.conf. Исправим его. 
+* Эта и все последующие команды выполнять из папки fsl-community-bsp/build*
+
+	$ gedit conf/bblayers.conf
+
+В резуьтате увидим следующую картину:
+
+		LCONF_VERSION = "6"
+
+		BBPATH = "${TOPDIR}"
+		BSPDIR := "${@os.path.abspath(os.path.dirname(d.getVar('FILE', True)) + '/../..')}"
+
+		BBFILES ?= ""
+		BBLAYERS = " \
+ 		  ${BSPDIR}/sources/poky/meta \
+		  ${BSPDIR}/sources/poky/meta-yocto \
+		  \
+		  ${BSPDIR}/sources/meta-openembedded/meta-oe \
+		  \
+		  ${BSPDIR}/sources/meta-fsl-arm \
+		  ${BSPDIR}/sources/meta-fsl-arm-extra \
+		  ${BSPDIR}/sources/meta-fsl-demos \
+		"
+
+Перед вами список всех слоев, о которых знает bitbake. Переменная "${BSPDIR}" - наша папка fsl-community-bsp.
+Добавим новый слой после meta-fsl-demos.
+
+		  ${BSPDIR}/sources/meta-strim-tech \
+
+Теперь bitbake знает про новый слой, но это еще не все. По умолчанию он будет собирать образы для платы SabreBoard, что нам, конечно, не подходит. наставим его на путь истинный отредактировав файл local.conf.
+
+	$ gedit conf/local.conf
+
+В данный момент нас интересует переменная MACHINE ??= 'imx6qsabresd'. Заменим эту строку на такую:
+	
+		MACHINE ??= 'marsboard'
+
+В конце файла добавим строку:
+
+		GCCVERSION = "4.7%"
+
+В этом же файле есть такие строки:
+		
+		BB_NUMBER_THREADS = '4'
+		PARALLEL_MAKE = '-j 4'
+
+Это число потоков сборки и параллельных задач сборки. Рекомендуемые значения -  в два раза больше, чем число ядер вашего процессора. 
+
+Все, теперь можно сохранить изменения и выйти. Предварительная настройка bitbake окончена и можно начинать работу.
+
+Если хотите узнать имена доступных для сборки образов выполните команду:
+
+	$ find ../sources -name *image*
+
+Что бы собрать наш образ для marsboard используйте команду:
+
+	$ bitbake strim-image-minimal
+
+Bitbake соберет rootfs для marsboard, ядро и загрузчик.
+
+ВАЖНО!! Сборка образа занимает довольно много времени, от часа и более. Для предупреждения появления ошибок рекомендуется на время сборки не оставлять открытыми другие приложения и вообще оставить компьютер в покое.
+
+Для редактирования настроек ядра используйте команду:
+
+	$ bitbake -c menuconfig linux-marsboard
+
+После изменения насроек ядра его необходимо пересобрать:
+
+	$ bitbake -c clean linux-marsboard
+
+	$ bitbake linux-marsboard
 
 
-Dependencies
-============
-
-This layer depends on:
-
-  URI: git://git.openembedded.org/bitbake
-  branch: master
-
-  URI: git://git.openembedded.org/openembedded-core
-  layers: meta
-  branch: master
-
-  URI: git://git.yoctoproject.org/xxxx
-  layers: xxxx
-  branch: master
-
-
-Patches
-=======
-
-Please submit any patches against the strim-tech layer to the
-xxxx mailing list (xxxx@zzzz.org) and cc: the maintainer:
-
-Maintainer: XXX YYYYYY <xxx.yyyyyy@zzzzz.com>
-
-
-Table of Contents
-=================
-
-  I. Adding the strim-tech layer to your build
- II. Misc
-
-
-I. Adding the strim-tech layer to your build
-=================================================
-
---- replace with specific instructions for the strim-tech layer ---
-
-In order to use this layer, you need to make the build system aware of
-it.
-
-Assuming the strim-tech layer exists at the top-level of your
-yocto build tree, you can add it to the build system by adding the
-location of the strim-tech layer to bblayers.conf, along with any
-other layers needed. e.g.:
-
-  BBLAYERS ?= " \
-    /path/to/yocto/meta \
-    /path/to/yocto/meta-yocto \
-    /path/to/yocto/meta-yocto-bsp \
-    /path/to/yocto/meta-strim-tech \
-    "
-
-
-II. Misc
-========
-
---- replace with specific information about the strim-tech layer ---
