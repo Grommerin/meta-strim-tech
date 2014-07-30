@@ -12,23 +12,23 @@
 
 Инициализируем repo (из Google), добавляем его в переменные среды и даем прав всяких и разных.
 
-    $ mkdir ~/bin
+	$ mkdir ~/bin
 
-    $ curl http://commondatastorage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
+	$ curl http://commondatastorage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
 
-    $ PATH=$PATH:~/bin
+	$ PATH=$PATH:~/bin
 
-    $ chmod a+x ~/bin/repo
+	$ chmod a+x ~/bin/repo
 
 Теперь пришло времмя скачать исходный код.
 
-    $ mkdir fsl-community-bsp
+	$ mkdir fsl-community-bsp
 
-    $ cd fsl-community-bsp
+	$ cd fsl-community-bsp
 
-    $ repo init -u https://github.com/Freescale/fsl-community-bsp-platform -b dora 
+	$ repo init -u https://github.com/Freescale/fsl-community-bsp-platform -b dora 
 
-    $ repo sync
+	$ repo sync
 
 //.....................................................................
 
@@ -40,11 +40,11 @@
 
 	$ PATH=$PATH:~/bin
 
-    $ chmod a+x ~/bin/repo
+	$ chmod a+x ~/bin/repo
 
-    $ cd fsl-community-bsp
+	$ cd fsl-community-bsp
 
-    $ repo sync
+	$ repo sync
 
 //....................................................................
 
