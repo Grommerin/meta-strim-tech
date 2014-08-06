@@ -17,7 +17,7 @@ SCMVERSION ?= "y"
 SRC_URI = "git://github.com/Grommerin/kernel_imx.git \
            file://defconfig;name=dconf \
 "
-SRC_URI[dconf.md5sum] = "6af0c74fe0a87d8fdb3dfb4cfd19063b"
+SRC_URI[dconf.md5sum] = "dfd031f581605025a50c62642cc4102d"
 
 do_install_append() {
    # I keep getting do_package_qa errors when leaving these files in this directory
