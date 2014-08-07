@@ -1,0 +1,17 @@
+ttymxc2
+115200
+noauth
+defaultroute
+lock
+debug
+novjccomp
+nopcomp
+noaccomp
+nodeflate
+novj
+nobsdcomp
+default-asyncmap
+ipcp-accept-local
+ipcp-accept-remote
+usepeerdns
+

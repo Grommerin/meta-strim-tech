@@ -15,7 +15,8 @@ inherit core-image
 
 IMAGE_ROOTFS_SIZE = "8192"
 
-IMAGE_FSTYPES = "ext3 sdcard tar.gz"
+#IMAGE_FSTYPES = "ext3 sdcard tar.gz"
+IMAGE_FSTYPES = "tar.gz"
 
 PREFERRED_VERSION_gcc = "4.7.2"
 PREFERRED_VERSION_gcc-cross = "4.7.2"
