@@ -1,0 +1,4 @@
+ABORT           'BUSY'         
+ABORT           'ERROR'        
+ABORT           'NO DIALTONE'                 
+''              '+++ATH'        

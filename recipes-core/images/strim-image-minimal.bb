@@ -4,7 +4,7 @@ IMAGE_INSTALL = "packagegroup-core-boot \
 		 packagegroup-core-ssh-openssh \
 		 ${ROOTFS_PKGMANAGE_BOOTSTRAP} \
 		 ${CORE_IMAGE_EXTRA_INSTALL} \
-		 canutils mc iproute2 minicom ppp"
+		 canutils mc iproute2 minicom ppp sqlite libxml2"
 
 IMAGE_LINGUAS = " "
 

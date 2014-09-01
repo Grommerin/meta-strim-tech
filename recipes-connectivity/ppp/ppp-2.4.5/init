@@ -11,9 +11,6 @@ if [ -x /etc/ppp/ppp_on_boot ]; then RUNFILE=1; fi
 
 case "$1" in
   start)
-	stat_busy "Starting PPP daemon"
-    	/etc/ppp/wait-dialup-hardware
-    	[ -z "$PID" ] && /usr/bin/pon
       echo -n "Starting up PPP link: pppd"
       if [ "$RUNFILE" = "1" ]; then
         /etc/ppp/ppp_on_boot
@@ -35,11 +32,11 @@ case "$1" in
     echo -n "Restarting PPP link: pppd"
     if [ "$RUNFILE" = "1" ]; then      
       poff
-      sleep 5
+      sleep 100
       /etc/ppp/ppp_on_boot
     else                  
       poff provider
-      sleep 5
+      sleep 100
       pppd call provider
     fi
     echo "."
